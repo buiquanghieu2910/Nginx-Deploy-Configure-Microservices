@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  webserver:
+    container_name: webserver
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+
+  front-end-client:
+    container_name: front-end-client
+    build:
+      context: ./front-end-client
+      dockerfile: Dockerfile
+    ports:
+      - 8082:80
+    volumes:
+      - ./front-end-client/:/app
+      - front-end-client:/app/node_modules
+
+  front-end-admin:
+    container_name: front-end-admin
+    build:
+      context: ./front-end-admin
+      dockerfile: Dockerfile
+    volumes:
+      - ./front-end-admin/:/app
+      - front-end-admin:/app/node_modules
+
+  back-end:
+    build: ./back-end
+    container_name: back-end
+    restart: unless-stopped
+    volumes:
+      - ./back-end/:/project
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+
+volumes:
+  front-end-client:
+  front-end-admin:
